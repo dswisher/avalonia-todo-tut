@@ -10,14 +10,14 @@ namespace MyApp.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        private ViewModelBase content;
+        private ViewModelBase? content;
         
         public MainWindowViewModel(Database db)
         {
             Content = List = new TodoListViewModel(db.GetItems());
         }
 
-        public ViewModelBase Content
+        public ViewModelBase? Content
         {
             get => content;
             private set => this.RaiseAndSetIfChanged(ref content, value);
