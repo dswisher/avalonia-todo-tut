@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reactive.Linq;
 using System.Text;
+using MyApp.Models;
 using MyApp.Services;
 using ReactiveUI;
 
@@ -12,7 +14,7 @@ namespace MyApp.ViewModels
         
         public MainWindowViewModel(Database db)
         {
-            List = new TodoListViewModel(db.GetItems());
+            Content = List = new TodoListViewModel(db.GetItems());
         }
 
         public ViewModelBase Content
@@ -25,7 +27,23 @@ namespace MyApp.ViewModels
 
         public void AddItem()
         {
-            Content = new AddItemViewModel();
+            var vm = new AddItemViewModel();
+
+            Observable.Merge(
+                    vm.Ok,
+                    vm.Cancel.Select(_ => (TodoItem?)null))
+                .Take(1)
+                .Subscribe(model =>
+                {
+                    if (model != null)
+                    {
+                        List.Items.Add(model);
+                    }
+
+                    Content = List;
+                });
+
+            Content = vm;
         }
     }
 }
